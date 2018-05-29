@@ -7,3 +7,5 @@ This project demonstrates how to create a simple CRUD application with [Play](ht
 To see an example of a Play application using Slick outside of the application lifecycle, please see:
 
 <https://github.com/playframework/play-scala-isolated-slick-example/>
+
+Persona Controller es el controlador uitlizado para exponer los servicios de consultar e insertar personas.
