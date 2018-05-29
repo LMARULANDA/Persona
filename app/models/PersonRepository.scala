@@ -1,10 +1,11 @@
 package models
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
+import play.api.mvc.Result
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * A repository for people.
@@ -69,10 +70,21 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
     ) += (name, age)
   }
 
+
+
+
+
   /**
    * List all the people in the database.
    */
   def list(): Future[Seq[Person]] = db.run {
     people.result
   }
+
+  def personOrderBy(): Future[Seq[Person]] = db.run(people.sortBy(_.name.asc).result)
+
+  def personMayorDeEdad(): Future[Seq[Person]] = db.run(people.filter(_.age >= 18 ).result)
+
+
+
 }
