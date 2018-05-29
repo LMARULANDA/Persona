@@ -1,12 +1,11 @@
 package controllers
 
 import javax.inject._
-
 import models._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsNumber, JsResult, JsValue, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,9 +28,7 @@ class PersonController @Inject()(repo: PersonRepository,
   /**
    * The index action.
    */
-  def index = Action { implicit request =>
-    Ok(views.html.index(personForm))
-  }
+
 
   /**
    * The add person action.
@@ -39,7 +36,7 @@ class PersonController @Inject()(repo: PersonRepository,
    * This is asynchronous, since we're invoking the asynchronous methods on PersonRepository.
    */
 
-    def addPerson= Action.async(parse.json[Person]){ request =>
+    def addPerson1= Action.async(parse.json[Person]){ request =>
       val person = request.body
       insertPerson(person)
         }
@@ -53,6 +50,60 @@ class PersonController @Inject()(repo: PersonRepository,
         }
       }
   }
+
+  def addPerson2 = Action { request: Request[AnyContent] =>
+    val body: AnyContent = request.body
+    val jsonBody: Option[JsValue] = body.asJson
+
+    // Expecting json body
+    jsonBody.map { json =>
+      Ok("Got: " + (json \ "name").as[String])
+    }.getOrElse {
+      BadRequest("Expecting application/json request body")
+    }
+  }
+
+  def addPerson3 = Action(parse.json) { request: Request[JsValue] =>
+    Ok("Got:" + (request.body \ "name").as[String])
+  }
+
+  def addPerson4 = Action { request: Request[AnyContent] =>
+    val body: AnyContent = request.body
+    val jsonBody: Option[JsValue] = body.asJson
+
+    //Got: JsDefined("laura")esta en la lista
+    // Expecting json body
+    jsonBody.map { json =>
+      if ((json \ "name").as[String] == "laura"){
+        Ok("Got: " + (json \ "name").as[String] +" esta en la lista")
+      } else {
+        Ok("El nombre laura no se encuentra en el json")
+      }
+      //Ok("Got: " + (json \ "name").as[String])
+    }.getOrElse {
+      BadRequest("Expecting application/json request body")
+    }
+  }
+
+  def addPerson = Action { request: Request[AnyContent] =>
+    val body: AnyContent = request.body
+    val jsonBody: Option[JsValue] = body.asJson
+
+    //Got: JsDefined("laura")esta en la lista
+    // Expecting json body
+    jsonBody.map { json =>
+      val ageResult: JsResult[Int] = json.validate[Int](Person.personAgeReads)
+      if ((json \ "age").as[Int] >= 18){
+        Ok("Got: " + (json \ "name").as[String] +" es mayor de edad: " + ageResult.get)
+      } else {
+        Ok((json \"name").as[String]+ " no es mayor de edad")
+      }
+      //Ok("Got: " + (json \ "name").as[String])
+    }.getOrElse {
+      BadRequest("Expecting application/json request body")
+    }
+  }
+
 
   /**
    * A REST endpoint that gets all the people as JSON.

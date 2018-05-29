@@ -7,6 +7,8 @@ import play.api.mvc.Result
 
 import scala.concurrent.Future
 
+/*
+
 class PersonService @Inject (personRepository: PersonRepository) {
 
    def insertPerson(person: Person):Future[Result] = {
@@ -18,4 +20,4 @@ class PersonService @Inject (personRepository: PersonRepository) {
         }
       }
   }
-}
+}*/

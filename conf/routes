@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.PersonController.index
+#GET     /                           controllers.PersonController.index
 POST    /person                     controllers.PersonController.addPerson
 GET     /persons                    controllers.PersonController.getPersons
 
